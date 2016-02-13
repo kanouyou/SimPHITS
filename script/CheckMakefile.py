@@ -10,10 +10,13 @@ Usage:
 Option:
      --phits_dir      set the path of phits directory
      --version, -v    check the version of phits
+     --silent, -s     silent mode
 """
 
 from sys import argv
 from re  import match
+
+fSilent = False
 
 # default path of phits directory
 phits_dir = "/home/yeyang/Documents/Software/PHITS/phits2.88"
@@ -42,10 +45,11 @@ def GetPhitsVersion(phitsdir):
 def GetMakefileContents(phits_dir):
 	phits_src = phits_dir+"/src"
 	phits_makefile = phits_src + "/makefile"
-	if (phits_makefile):
-		print " -- PHITS Makefile: found"
-	else:
-		print " -- PHITS Makefile: not found"
+	if (fSilent==False):
+		if (phits_makefile):
+			print " -- PHITS Makefile: found"
+		else:
+			print " -- PHITS Makefile: not found"
 	# read makefile and return makfile
 	try:
 		makefile = open(phits_makefile, "r")
@@ -74,7 +78,9 @@ def GetSourceInfo(dataline):
 			src.append(buff)
 	for i in range(len(src)):
 		for j in range(len(src[i])):
-			print src[i][j]
+			ben = src[i][j].strip().strip("\\")
+			item = ben.split()
+			print item
 	return
 
 
@@ -89,7 +95,10 @@ if (__name__=="__main__"):
 		if (argv[i]=="--version" or argv[i]=="-v"):
 			version = GetPhitsVersion(phits_dir)
 			print " -- PHITS Version: ", version
+		elif (argv[i]=="--silent" or argv[i]=="-s"):
+			fSilent = True
 
-	print " -- PHITS Directory: ", phits_dir
+	if (fSilent==False):
+		print " -- PHITS Directory: ", phits_dir
 	contents = GetMakefileContents(phits_dir)
 	GetSourceInfo(contents)
